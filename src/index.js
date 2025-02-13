@@ -115,30 +115,6 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Todo Routes
-app.get('/api/todos', authenticateToken, async (req, res) => {
-  try {
-    const todos = await Todo.find({ userId: req.user?.userId });
-    res.json(todos);
-  } catch (error) {
-    console.error("❌ Internal Server Error:", error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-
-  }
-});
-
-app.post('/api/todos', authenticateToken, async (req, res) => {
-  try {
-    const { title, description } = req.body;
-    const todo = new Todo({ userId: req.user?.userId, title, description, completed: false });
-    await todo.save();
-    res.status(201).json(todo);
-  } catch (error) {
-    console.error("❌ Internal Server Error:", error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-
-  }
-});
-
 app.put('/api/todos/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -200,7 +176,6 @@ app.put('/api/todos/:id/toggle', authenticateToken, async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-
 
 app.delete('/api/todos/:id', authenticateToken, async (req, res) => {
   try {
