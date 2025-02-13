@@ -7,11 +7,16 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
-// app.use(cors());
-app.use(cors({
-  origin: ['http://localhost:4200', 'https://tascmaster.netlify.app'], // ✅ Add frontend origins
-  credentials: true
-}));
+const corsOptions = {
+  origin: ['http://localhost:4200', 'https://tascmaster.netlify.app'], // ✅ Allow frontend origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // ✅ Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // ✅ Allowed headers
+  credentials: true // ✅ Allow cookies & authentication headers
+};
+
+app.use(cors(corsOptions));
+
+// app.use(express.urlencoded({ extended: true })); // ✅ Parse URL-encoded bodies
 
 app.use(express.json());
 
