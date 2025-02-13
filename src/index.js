@@ -8,7 +8,8 @@ require('dotenv').config();
 
 const app = express();
 const corsOptions = {
-  origin: ['http://localhost:4200', 'https://tascmaster.netlify.app'], // ✅ Allow frontend origins
+  // origin: ['http://localhost:4200', 'https://tascmaster.netlify.app'], // ✅ Allow frontend origins
+  origin: '*', // ✅ Allow frontend origins
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // ✅ Allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // ✅ Allowed headers
   credentials: true // ✅ Allow cookies & authentication headers
