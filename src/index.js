@@ -24,14 +24,16 @@ app.use(express.json());
 // MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI;
 
-mongoose
-  .connect(MONGO_URI)
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 10000, // ⏳ Wait 10s before failing
+})
   .then(() => console.log("✅ MongoDB Connected Successfully"))
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err);
-    process.exit(1); // ✅ Stop server if DB fails
+  .catch(err => {
+    console.error("❌ MongoDB Connection Error:", err.message);
+    process.exit(1); // Exit the process if DB connection fails
   });
-
 
 // User Schema
 const userSchema = new mongoose.Schema({
