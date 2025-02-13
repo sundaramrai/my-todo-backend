@@ -21,7 +21,11 @@ const MONGO_URI = process.env.MONGO_URI;
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected Successfully"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
+  .catch((err) => {
+    console.error("❌ MongoDB Connection Error:", err);
+    process.exit(1); // ✅ Stop server if DB fails
+  });
+
 
 // User Schema
 const userSchema = new mongoose.Schema({
@@ -65,7 +69,7 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/register', async (req, res) => {
   try {
     const { email, username, password, phoneNumbers } = req.body;
-    
+
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res.status(400).json({
@@ -79,7 +83,9 @@ app.post('/api/register', async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Internal Server Error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+
   }
 });
 
@@ -94,7 +100,9 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '12h' });
     res.json({ token, user: { username: user.username, email: user.email } });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Internal Server Error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+
   }
 });
 
@@ -104,7 +112,9 @@ app.get('/api/todos', authenticateToken, async (req, res) => {
     const todos = await Todo.find({ userId: req.user?.userId });
     res.json(todos);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Internal Server Error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+
   }
 });
 
@@ -115,7 +125,9 @@ app.post('/api/todos', authenticateToken, async (req, res) => {
     await todo.save();
     res.status(201).json(todo);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error("❌ Internal Server Error:", error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+
   }
 });
 
@@ -209,7 +221,7 @@ app.delete('/api/todos/:id', authenticateToken, async (req, res) => {
 });
 
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
