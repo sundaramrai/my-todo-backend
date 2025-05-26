@@ -8,11 +8,10 @@ require('dotenv').config();
 
 const app = express();
 const corsOptions = {
-  // origin: ['http://localhost:4200', 'https://tascmaster.netlify.app'], // ✅ Allow frontend origins
-  origin: '*', // ✅ Allow frontend origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // ✅ Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // ✅ Allowed headers
-  credentials: true // ✅ Allow cookies & authentication headers
+  origin: [/^http:\/\/localhost(:[0-9]+)?$/, 'https://tascmaster.vercel.app', 'https://tascmaster.netlify.app'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 };
 
 app.use(cors(corsOptions));
@@ -25,8 +24,6 @@ app.use(express.json());
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   serverSelectionTimeoutMS: 10000, // ⏳ Wait 10s before failing
 })
   .then(() => console.log("✅ MongoDB Connected Successfully"))
@@ -228,6 +225,9 @@ app.delete('/api/todos/:id', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'API is running' });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
